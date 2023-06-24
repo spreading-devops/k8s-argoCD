@@ -20,9 +20,9 @@ https://k3d.io/v5.5.1/usage/configfile/
 ### Download k3d binary and put in your PATH environment variable
 https://github.com/k3d-io/k3d/releases/download/v5.5.1/k3d-windows-amd64.exe
 
-### Start a K3s kubernetes cluster using K3d
+### Start a K3s kubernetes cluster using K3d (Powershell)
 ```powershell
-.\k3d-windows-amd64.exe cluster create argocd-cluster --config .\cluster-config.yaml
+> .\k3d-windows-amd64.exe cluster create argocd-cluster --config .\cluster-config.yaml
 ```
 
 ### Create a namespace to ArgoCD resources on K8s and install the ArgoCD from official manifest
@@ -57,5 +57,23 @@ https://localhost:8080/
 $ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d && echo
 ```
 
+### Create a new Repository Connection using ArgoCD web UI
 
+https://github.com/spreading-devops/argocd-public-repo.git
+
+### Create a new Application using ArgoCD web UI
+
+Specify the Repository Connection created
+
+### Sync the Application and the Repository using ArgoCD web UI
+
+Click in SYNC
+
+### Expose the Service created via Port-Forward
+```shell
+$ kubectl port-forward svc/nginx-service -n default 8081:80
+```
+
+### Access the application
+https://localhost:8080/
 
