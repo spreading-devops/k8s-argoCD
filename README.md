@@ -20,7 +20,7 @@ https://k3d.io/v5.5.1/usage/configfile/
 ### Download k3d binary and put in your PATH environment variable
 https://github.com/k3d-io/k3d/releases/download/v5.5.1/k3d-windows-amd64.exe
 
-### Start a K3s kubernetes cluster using K3d (Powershell)
+### Start a K3s kubernetes cluster using K3d (Powershell in my case)
 ```powershell
 > .\k3d-windows-amd64.exe cluster create argocd-cluster --config .\cluster-config.yaml
 ```
@@ -76,4 +76,45 @@ $ kubectl port-forward svc/nginx-service -n default 8081:80
 
 ### Access the application
 https://localhost:8081/
+
+### Login
+```shell
+$ argocd login localhost:8080
+WARNING: server certificate had error: x509: certificate signed by unknown authority. Proceed insecurely (y/n)? y
+Username: admin
+Password: 
+'admin:login' logged in successfully
+Context 'localhost:8080' updated
+```
+### Changing the admin default password
+```shell
+$ argocd account update-password
+*** Enter password of currently logged in user (admin): 
+*** Enter new password for user admin: 
+*** Confirm new password for user admin: 
+Password updated
+Context 'localhost:8080' updated
+```
+
+### Detele the Application using ArgoCD web UI
+
+Click em DELETE e confirm.
+
+## Manage multiple K8s clusters with ArgoCD
+
+### Create another k8s cluster using K3d (Powershell in my case)
+```powershell
+> .\k3d-windows-amd64.exe cluster create dev-cluster --config dev-cluster-config.yaml
+```
+
+### Switch kubectl between clusters (contexts)
+```shell
+$ kubectl config use-context dev-cluster
+$ kubectl config use-context k3d-argocd-cluster
+```
+
+### 
+```shell
+$ kubectl config view
+```
 
