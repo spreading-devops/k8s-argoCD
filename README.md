@@ -75,5 +75,5 @@ $ kubectl port-forward svc/nginx-service -n default 8081:80
 ```
 
 ### Access the application
-https://localhost:8080/
+https://localhost:8081/
 
