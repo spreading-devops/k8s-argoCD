@@ -7,6 +7,7 @@ WSL2 + Ubuntu 22.04.2 LTS
 Docker Desktop 4.20.1
 k3d v5.5.1
 argocd 2.7.6
+helm v3.12.1
 ```
 
 K3d releases
@@ -14,6 +15,9 @@ https://github.com/k3d-io/k3d/releases
 
 K3d docs
 https://k3d.io/v5.5.1/usage/configfile/
+
+Helm releases
+https://github.com/helm/helm/releases
 
 ## Steps
 
@@ -107,14 +111,83 @@ Click em DELETE e confirm.
 > .\k3d-windows-amd64.exe cluster create dev-cluster --config dev-cluster-config.yaml
 ```
 
-### Switch kubectl between clusters (contexts)
-```shell
-$ kubectl config use-context dev-cluster
-$ kubectl config use-context k3d-argocd-cluster
-```
-
-### 
+### Show .kube/config settings
 ```shell
 $ kubectl config view
 ```
+### Show all kube contexts
+```shell
+$ kubectl config get-contexts
+$ kubectl config get-contexts -o name
+```
+
+### Switch kubectl between k8s clusters contexts
+```shell
+$ kubectl config use-context k3d-dev-cluster
+$ kubectl config use-context k3d-argocd-cluster
+```
+
+### Added the new K8s cluster into ArgoCD
+```shell
+$ argocd cluster add k3d-dev-cluster --name dev-cluster
+```
+
+### Authenticate to ArgoCD from command line
+```shell
+$ argocd login localhost:8080 --insecure
+```
+
+### List all ArgoCD projects
+```shell
+$ argocd proj list
+```
+
+### List all Git repositories in ArgoCD
+```shell
+$ argocd repo list
+```
+
+### List all Apps in ArgoCD
+```shell
+$ argocd app list
+```
+
+### On ArgoCD, create a new project for the new k8s cluster (namespace: default) using the existing public github repository.
+```shell
+$ argocd proj create dev-argocd -d https://192.168.0.35:51937,default -s https://github.com/spreading-devops/argocd-public-repo
+```
+
+### Create a K8s Secret used to connect to a Private Docker Hub repository
+```shell
+$ kubectl create secret docker-registry regcred --docker-server=https://index.docker.io/v2/ --
+docker-username=<your-username> --docker-password=<your-password> --docker-email=<your-email>
+```
+
+### Create a new Private repo on Github
+https://github.com/spreading-devops/argocd-private-repo
+
+### Create a new Repository Connection to this new Private repository using ArgoCD web UI
+In my case, I use a new SSH private key pair to connect ArgoCD to my private Github repository.
+
+### Add a new source on dev-argocd Project using ArgoCD cli
+```shell
+$ argocd proj add-source dev-argocd git@github.com:spreading-devops/argocd-private-repo.git
+```
+
+### Create a new App udsing ArgoCD web UI or Yaml file
+
+### Start de deployment
+
+Click in SYNC and wait the deployment process end
+
+### Expose the Service created via Port-Forward
+```shell
+$ kubectl port-forward svc/hello-app-service -n default 8081:6000
+```
+### Access the application
+https://localhost:8081/
+
+### Make changes in Python code, commit then on Git, build the new container image and push to Docker Hub
+
+
 
