@@ -278,3 +278,7 @@ https://k3d.io/v5.5.1/usage/configfile/
 
 ### Helm releases
 https://github.com/helm/helm/releases
+
+### Argo CD docs
+https://argo-cd.readthedocs.io/en/stable/
+
