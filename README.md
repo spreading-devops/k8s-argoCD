@@ -104,7 +104,7 @@ Context 'localhost:8080' updated
 
 Click em DELETE e confirm.
 
-## Manage multiple K8s clusters with ArgoCD
+## Manage multiple K8s clusters with ArgoCD - Part 1 - another local k8s cluster created using K3d
 
 ### Create another k8s cluster using K3d (Powershell in my case)
 ```powershell
@@ -154,13 +154,12 @@ $ argocd app list
 
 ### On ArgoCD, create a new project for the new k8s cluster (namespace: default) using the existing public github repository.
 ```shell
-$ argocd proj create dev-argocd -d https://192.168.0.35:51937,default -s https://github.com/spreading-devops/argocd-public-repo
+$ argocd proj create oci-oke-argocd -d https://192.168.0.35:51937,default -s https://github.com/spreading-devops/argocd-public-repo
 ```
 
 ### Create a K8s Secret used to connect to a Private Docker Hub repository
 ```shell
-$ kubectl create secret docker-registry regcred --docker-server=https://index.docker.io/v2/ --
-docker-username=<your-username> --docker-password=<your-password> --docker-email=<your-email>
+$ kubectl create secret docker-registry regcred --docker-server=https://index.docker.io/v2/ --docker-username=<your-username> --docker-password=<your-password> --docker-email=<your-email>
 ```
 
 ### Create a new Private repo on Github
@@ -169,7 +168,7 @@ https://github.com/spreading-devops/argocd-private-repo
 ### Create a new Repository Connection to this new Private repository using ArgoCD web UI
 In my case, I use a new SSH private key pair to connect ArgoCD to my private Github repository.
 
-### Add a new source on dev-argocd Project using ArgoCD cli
+### Add a new source on dev-argocd Project using ArgoCD cli (Github private repo)
 ```shell
 $ argocd proj add-source dev-argocd git@github.com:spreading-devops/argocd-private-repo.git
 ```
@@ -189,5 +188,48 @@ https://localhost:8081/
 
 ### Make changes in Python code, commit then on Git, build the new container image and push to Docker Hub
 
+Use the ArgoCD web UI to follow the changes.
 
+## Manage multiple K8s clusters with ArgoCD - Part 2 - Managing OCI OKE cluster created using Terraform
+
+https://github.com/carinotecnologia/oci-oke-terraform/
+
+### Create a new project for the OKE k8s cluster (namespace: default) using the existing public github repository.
+```shell
+$ argocd proj create dev-argocd -d https://141.148.95.90:6443,default -s https://github.com/spreading-devops/argocd-public-repo
+```
+
+### Add a new source on oci-oke-argocd Project using ArgoCD cli (Github private repo)
+```shell
+$ argocd proj add-source oci-oke-argocd git@github.com:spreading-devops/argocd-private-repo.git
+```
+
+### Create a K8s Secret used to connect to a Private Docker Hub repository
+```shell
+$ kubectl create secret docker-registry regcred --docker-server=https://index.docker.io/v2/ --docker-username=<your-username> --docker-password=<your-password> --docker-email=<your-email>
+```
+
+## Manage multiple K8s clusters with ArgoCD - Part 3
+
+### Deploying `whoami` web application using ArgoCD
+
+https://github.com/spreading-devops/whoami
+
+### Add a new source on dev-argocd Project using ArgoCD cli (Github public repo)
+```shell
+$ argocd proj add-source dev-argocd git@github.com:spreading-devops/whoami.git
+```
+
+### Switch kubectl between k8s clusters contexts
+```shell
+$ kubectl config use-context k3d-dev-cluster
+```
+
+### Expose `whoami` service created via Port-Forward
+```shell
+$ kubectl port-forward svc/whoami-service -n default 8088:80
+```
+
+### Access `whoami` application
+https://localhost:8088
 

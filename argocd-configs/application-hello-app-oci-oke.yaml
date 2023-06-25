@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: hello-app-oci-oke
+spec:
+  destination:
+    name: ''
+    namespace: default
+    server: 'https://141.148.95.90:6443'
+  source:
+    path: hello_app
+    repoURL: 'git@github.com:spreading-devops/argocd-private-repo.git'
+    targetRevision: HEAD
+  sources: []
+  project: oci-oke-argocd
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
