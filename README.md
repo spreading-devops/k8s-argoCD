@@ -262,10 +262,11 @@ https://localhost:8088
 
 
 ## Refferences
-
+```
 O'Really Book   - GitOps Cookbook
 O'Really Book   - Argo CD: Up & Running
 Lynda training  - Kubernetes: GitOps with ArgoCD
+```
 
 ## Documentation
 
